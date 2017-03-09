@@ -35,20 +35,7 @@ app.on('ready', () => {
 
 ## API
 
-### protocolServe(cwd, options)
-
-```js
-/**
- * @param  {String} cwd                        the path to the dist folder of your Ember app
- * @param  {Object} options.app                electron.app
- * @param  {Object} options.protocol           electron.protocol
- * @param  {String} options.name               name of your protocol, defaults to `serve`
- * @param  {String} options.endpoint           endpoint of your protocol, defaults to `dist`
- * @param  {String} options.directoryIndexFile directory index. usally the default, `index.html`
- * @return {String}                            name of your protocol
- */
-```
-
+See `index.js`.
 
 
 ## Credits

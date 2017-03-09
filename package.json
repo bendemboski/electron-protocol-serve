@@ -1,0 +1,16 @@
+{
+  "name": "electron-protocol-serve",
+  "version": "0.1.0",
+  "description": "A file protocol that serves any existing file in a directory and redirects everything not found to index.html.",
+  "main": "index.js",
+  "repository": "git@github.com:pichfl/electron-protocol-ember.git",
+  "author": "Florian Pichler <pichfl@ylk.gd>",
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "eslint": "^3.17.1"
+  },
+  "dependencies": {}
+}

@@ -3,7 +3,7 @@ const sinon = require('sinon');
 const Promise = require('bluebird');
 const fs = require('fs');
 const { join, resolve } = require('path');
-const createHandler = require('../../lib/handler');
+const subject = require('../../lib/handler');
 
 describe('handler', () => {
   let sandbox;
@@ -27,17 +27,20 @@ describe('handler', () => {
     mockFiles = [];
   });
 
-  // Create a handler with the specified options and call it with the given URL
-  function handlerExec(url, options = {}) {
-    return new Promise((resolve, reject) => {
-      let handler = createHandler(Object.assign({
-        cwd: '.',
-        name: 'serve',
-        endpoint: 'dist',
-        directoryIndexFile: 'index.html',
-        indexPath: undefined,
-      }, options));
+  // Create a handler with the specified options
+  function createHandler(options) {
+    return subject(Object.assign({
+      cwd: '.',
+      name: 'serve',
+      endpoint: 'dist',
+      directoryIndexFile: 'index.html',
+      indexPath: undefined,
+    }, options));
+  }
 
+  // Call the handler with the given URL
+  function callHandler(handler, url) {
+    return new Promise((resolve, reject) => {
       handler({ url }, ({ path, error }) => {
         if (path !== undefined) {
           resolve(path);
@@ -48,10 +51,29 @@ describe('handler', () => {
     });
   }
 
+  // Create a handler with the specified options and call it with the given URL
+  function handlerExec(url, options = {}) {
+    return callHandler(createHandler(options), url);
+  }
+
   it('works', () => {
     mockFiles.push('script.js');
     return handlerExec('serve://dist/script.js').then(path => {
       assert.equal(path, 'script.js');
+    });
+  });
+
+  it('works with multiple requests', () => {
+    mockFiles.push('script1.js');
+    mockFiles.push('script2.js');
+
+    let handler = createHandler();
+    return callHandler(handler, 'serve://dist/script1.js').then(path => {
+      assert.equal(path, 'script1.js');
+
+      return callHandler(handler, 'serve://dist/script2.js');
+    }).then(path => {
+      assert.equal(path, 'script2.js');
     });
   });
 

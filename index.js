@@ -1,5 +1,4 @@
-const { join } = require('path');
-const fs = require('fs');
+const createHandler = require('./lib/create-handler');
 
 function requiredParam(param, errorMessage) {
   if (!param) {
@@ -35,36 +34,9 @@ module.exports = function protocolServe({
   requiredParam(protocol, 'protocol must be specified, should be electron.protocol');
   requiredParam(app, 'app must be specified, should be electron.app');
 
-  indexPath = indexPath || join(cwd, directoryIndexFile);
-
-  const cache = {};
-  const prefixLength = name.length + 3 + endpoint.length;
-
   app.on('ready', () => {
-    protocol.registerFileProtocol(name, (request, callback) => {
-      // the request url should start with ' ${name}://${endpoint}', remove that
-      const [url/* , hash */] = request.url.substr(prefixLength).split('#');
-      const urlSegments = url.split('/').filter(segment => segment !== '');
-
-      if (urlSegments.length === 0) {
-        urlSegments.push(directoryIndexFile);
-      }
-
-      const filepath = join(cwd, ...urlSegments);
-
-      // redirect empty requests to index.html
-      if (!cache[url]) {
-        try {
-          fs.accessSync(filepath);
-
-          cache[url] = filepath;
-        } catch (err) {
-          //
-        }
-      }
-
-      callback({ path: cache[url] || indexPath });
-    }, error => {
+    const options = { cwd, name, endpoint, directoryIndexFile, indexPath };
+    protocol.registerFileProtocol(name, createHandler(options), error => {
       if (error) {
         console.error('Failed to register protocol');
       }

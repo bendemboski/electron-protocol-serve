@@ -18,5 +18,7 @@
     "mocha": "^3.2.0",
     "sinon": "^1.17.7"
   },
-  "dependencies": {}
+  "dependencies": {
+    "mock-require": "^2.0.1"
+  }
 }

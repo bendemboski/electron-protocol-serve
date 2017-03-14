@@ -1,4 +1,4 @@
-const createHandler = require('./lib/create-handler');
+const createHandler = require('./lib/handler');
 
 function requiredParam(param, errorMessage) {
   if (!param) {

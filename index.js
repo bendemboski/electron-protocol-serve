@@ -1,3 +1,4 @@
+const { join } = require('path');
 const createHandler = require('./lib/handler');
 
 function requiredParam(param, errorMessage) {
@@ -16,8 +17,7 @@ function requiredParam(param, errorMessage) {
  * @param  {Object} options.protocol           electron.protocol
  * @param  {String} options.name               name of your protocol, defaults to `serve`
  * @param  {String} options.endpoint           endpoint of your protocol, defaults to `dist`
- * @param  {String} options.directoryIndexFile directory index. usally the default, `index.html`
- * @param  {String} options.indexPath          defaults to cwd + directoryIndexFile
+ * @param  {String} options.indexPath          defaults to 'index.html' in cwd
  *
  * @return {String}                            name of your protocol
  */
@@ -27,15 +27,16 @@ module.exports = function protocolServe({
   protocol,
   name = 'serve',
   endpoint = 'dist',
-  directoryIndexFile = 'index.html',
   indexPath = undefined,
 }) {
   requiredParam(cwd, 'cwd must be specified, should be a valid path');
   requiredParam(protocol, 'protocol must be specified, should be electron.protocol');
   requiredParam(app, 'app must be specified, should be electron.app');
 
+  indexPath = indexPath || join(cwd, 'index.html');
+
   app.on('ready', () => {
-    const options = { cwd, name, endpoint, directoryIndexFile, indexPath };
+    const options = { cwd, name, endpoint, indexPath };
     protocol.registerFileProtocol(name, createHandler(options), error => {
       if (error) {
         console.error('Failed to register protocol');

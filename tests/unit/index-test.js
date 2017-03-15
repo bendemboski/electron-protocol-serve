@@ -2,7 +2,7 @@ const { assert } = require('chai');
 const mock = require('mock-require');
 const { join } = require('path');
 
-describe('handler', () => {
+describe('index', () => {
   let app;
   let protocol;
   let onAppReady;
@@ -51,8 +51,23 @@ describe('handler', () => {
       cwd: '.',
       name: 'serve',
       endpoint: 'dist',
-      directoryIndexFile: 'index.html',
-      indexPath: undefined,
+      indexPath: join('.', 'index.html'),
+    });
+  });
+
+  it('works with a custom cwd', () => {
+    register({
+      cwd: join('foo', 'bar'),
+    });
+    assert.ok(onAppReady);
+    onAppReady();
+
+    assert.equal(protocolName, 'serve');
+    assert.deepEqual(handlerOptions, {
+      cwd: join('foo', 'bar'),
+      name: 'serve',
+      endpoint: 'dist',
+      indexPath: join('foo', 'bar', 'index.html'),
     });
   });
 
@@ -61,8 +76,7 @@ describe('handler', () => {
       cwd: join('my', 'old'),
       name: 'friend',
       endpoint: 'so',
-      directoryIndexFile: 'we.html',
-      indexPath: join('meet', 'again'),
+      indexPath: join('we', 'meet', 'again.html'),
     });
     assert.ok(onAppReady);
     onAppReady();
@@ -72,8 +86,7 @@ describe('handler', () => {
       cwd: join('my', 'old'),
       name: 'friend',
       endpoint: 'so',
-      directoryIndexFile: 'we.html',
-      indexPath: join('meet', 'again'),
+      indexPath: join('we', 'meet', 'again.html'),
     });
   });
 

@@ -35,14 +35,20 @@ module.exports = function protocolServe({
 
   indexPath = indexPath || join(cwd, 'index.html');
 
+  const options = { cwd, name, endpoint, indexPath };
+  const handler = createHandler(options);
+
   app.on('ready', () => {
-    const options = { cwd, name, endpoint, indexPath };
-    protocol.registerFileProtocol(name, createHandler(options), error => {
+    protocol.registerFileProtocol(name, handler, error => {
       if (error) {
         console.error('Failed to register protocol');
       }
     });
   });
+
+  // Set our ELECTRON_PROTOCOL_SERVE_INDEX environment variable so the renderer
+  // process can find index.html to set it up as its main module path
+  handler({ url: `${name}://${endpoint}` }, ({ path }) => process.env.ELECTRON_PROTOCOL_SERVE_INDEX = path);
 
   return name;
 };

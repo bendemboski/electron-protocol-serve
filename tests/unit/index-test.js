@@ -1,13 +1,17 @@
 const { assert } = require('chai');
 const mock = require('mock-require');
+const sinon = require('sinon');
 const { join } = require('path');
+const { clone } = require('lodash');
 
 describe('index', () => {
+  let env;
   let app;
   let protocol;
   let onAppReady;
   let protocolName;
   let handlerOptions;
+  let handlerStub;
 
   function register(options) {
     require('../..')(Object.assign({
@@ -17,14 +21,37 @@ describe('index', () => {
     }, options));
   }
 
-  before(() => {
-    mock('../../lib/handler', options => handlerOptions = options);
+  //
+  // Mock our handler library
+  //
+  beforeEach(() => {
+    handlerStub = sinon.stub();
+    handlerStub.callsArgWith(1, { path: '/path/to/index.html' });
+
+    mock('../../lib/handler', options => {
+      handlerOptions = options;
+      return handlerStub;
+    });
   });
 
-  after(() => {
+  afterEach(() => {
     mock.stop('../../lib/handler');
   });
 
+  //
+  // Sandbox any changes to the environment
+  //
+  beforeEach(() => {
+    env = clone(process.env);
+  });
+
+  afterEach(() => {
+    process.env = env;
+  });
+
+  //
+  // Set up our stubbed app and protocol
+  //
   beforeEach(() => {
     app = {
       on(evt, cb) {
@@ -53,6 +80,8 @@ describe('index', () => {
       endpoint: 'dist',
       indexPath: join('.', 'index.html'),
     });
+    assert.ok(handlerStub.calledWith({ url: 'serve://dist' }));
+    assert.equal(process.env.ELECTRON_PROTOCOL_SERVE_INDEX, '/path/to/index.html');
   });
 
   it('works with a custom cwd', () => {
@@ -69,6 +98,8 @@ describe('index', () => {
       endpoint: 'dist',
       indexPath: join('foo', 'bar', 'index.html'),
     });
+    assert.ok(handlerStub.calledWith({ url: 'serve://dist' }));
+    assert.equal(process.env.ELECTRON_PROTOCOL_SERVE_INDEX, '/path/to/index.html');
   });
 
   it('works with non-default arguments', () => {
@@ -88,6 +119,8 @@ describe('index', () => {
       endpoint: 'so',
       indexPath: join('we', 'meet', 'again.html'),
     });
+    assert.ok(handlerStub.calledWith({ url: 'friend://so' }));
+    assert.equal(process.env.ELECTRON_PROTOCOL_SERVE_INDEX, '/path/to/index.html');
   });
 
   it('required a cwd', () => {

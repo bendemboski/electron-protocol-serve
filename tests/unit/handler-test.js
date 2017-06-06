@@ -22,6 +22,9 @@ describe('handler', () => {
       isFile() {
         return mockFiles.indexOf(path) !== -1;
       },
+      isDirectory() {
+        return mockDirs.indexOf(path) !== -1;
+      },
     }));
   });
 
@@ -89,6 +92,28 @@ describe('handler', () => {
     mockDirs.push('.');
     mockFiles.push('foo.html');
     return handlerExec('serve://dist', {
+      cwd: '.',
+      indexPath: join('.', 'foo.html'),
+    }).then(path => {
+      assert.equal(path, join('.', 'foo.html'));
+    });
+  });
+
+  it('looks for index.html in directories', () => {
+    mockDirs.push('foo');
+    mockFiles.push(join('foo', 'index.html'));
+    return handlerExec('serve://dist/foo', {
+      cwd: '.',
+      indexPath: join('.', 'foo.html'),
+    }).then(path => {
+      assert.equal(path, join('foo', 'index.html'));
+    });
+  });
+
+  it('falls back on indexPath when directory does not contain index.html', () => {
+    mockDirs.push('foo');
+    mockFiles.push(join('foo', 'notindex.html'));
+    return handlerExec('serve://dist/foo', {
       cwd: '.',
       indexPath: join('.', 'foo.html'),
     }).then(path => {

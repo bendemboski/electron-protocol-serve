@@ -14,11 +14,12 @@ If you want to use it directly, you may do so at your own risk. Remember to regi
 In your `electron.js` file:
 
 ```js
-const { app, protocol } = require('electron');
+const { app, protocol, BrowserWindow } = require('electron');
 const protocolServe = require('electron-protocol-serve');
 
 // Create the protocol
-const protocolServeName = protocolServe('path/to/your/dist/folder', { app, protocol });
+const filePath = 'path/to/your/dist/folder';
+const protocolServeName = protocolServe({cwd: filePath, app, protocol });
 
 // The protocol we created needs to be registered
 protocol.registerStandardSchemes([protocolServeName], { secure: true });

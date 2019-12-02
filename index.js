@@ -38,12 +38,21 @@ module.exports = function protocolServe({
   const options = { cwd, name, endpoint, indexPath };
   const handler = createHandler(options);
 
+  let isProtocolSynchronous;
+  try {
+    isProtocolSynchronous = parseFloat(process.versions.electron) >= 7;
+  } catch (e) {
+    // Not running in electron
+    isProtocolSynchronous = false;
+  }
+
   app.on('ready', () => {
-    protocol.registerFileProtocol(name, handler, error => {
+    const callback = isProtocolSynchronous ? undefined : error => {
       if (error) {
         console.error('Failed to register protocol');
       }
-    });
+    };
+    protocol.registerFileProtocol(name, handler, callback);
   });
 
   // Set our ELECTRON_PROTOCOL_SERVE_INDEX environment variable so the renderer

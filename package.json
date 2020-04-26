@@ -1,6 +1,6 @@
 {
   "name": "electron-protocol-serve",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "A file protocol that serves any existing file in a directory and redirects everything not found to index.html.",
   "repository": "git@github.com:pichfl/electron-protocol-ember.git",
   "license": "MIT",

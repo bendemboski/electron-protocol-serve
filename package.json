@@ -23,16 +23,16 @@
     "test": "npm run mocha && npm run lint"
   },
   "devDependencies": {
-    "bluebird": "^3.5.0",
-    "chai": "^3.5.0",
+    "bluebird": "^3.7.2",
+    "chai": "^4.2.0",
     "dotenv-cli": "^3.1.0",
-    "eslint": "^3.17.1",
-    "lodash": "^4.17.4",
-    "mocha": "^3.2.0",
-    "mock-require": "^2.0.1",
+    "eslint": "^6.8.0",
+    "lodash": "^4.17.15",
+    "mocha": "^7.1.2",
+    "mock-require": "^3.0.3",
     "release-it": "^13.5.1",
     "release-it-lerna-changelog": "^2.1.2",
-    "sinon": "^1.17.7"
+    "sinon": "^9.0.2"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org"

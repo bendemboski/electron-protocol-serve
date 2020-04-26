@@ -6,19 +6,17 @@ const { join, resolve } = require('path');
 const subject = require('../../lib/handler');
 
 describe('handler', () => {
-  let sandbox;
   let mockFiles;
   let mockDirs;
 
   before(() => {
-    sandbox = sinon.sandbox.create();
     // Stub accessSync to act like only files in mockFiles exist
-    sandbox.stub(fs, 'accessSync', path => {
+    sinon.stub(fs, 'accessSync').callsFake(path => {
       if (mockFiles.indexOf(path) === -1 && mockDirs.indexOf(path) === -1) {
         throw new Error('Doesn\'t exist');
       }
     });
-    sandbox.stub(fs, 'statSync', path => ({
+    sinon.stub(fs, 'statSync').callsFake(path => ({
       isFile() {
         return mockFiles.indexOf(path) !== -1;
       },
@@ -29,7 +27,7 @@ describe('handler', () => {
   });
 
   after(() => {
-    sandbox.restore();
+    sinon.restore();
   });
 
   beforeEach(() => {
